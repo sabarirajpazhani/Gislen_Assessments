@@ -50,7 +50,7 @@ namespace Assessments
             Console.WriteLine("Here You can Enter the code of Items for purchasing");
             Console.ResetColor();
 
-            int quantity = 0;
+            int itemQuantity = 0;
             double total = 0;
 
             while (true)
@@ -86,57 +86,103 @@ namespace Assessments
                 switch (code)
                 {
                     case 101:
-                        quantity += 1;
+
+                        itemQuantity += 1;
                         Console.Write($"Enter the Quantity of {itemsName[code]} : ");
                         int quantity1 = int.Parse(Console.ReadLine());
                         double totalPrice1 = itemsPrice[code] * quantity1;
                         total += totalPrice1;
-                        produts.Add(itemsName[code], totalPrice1);
+
+                        if (produts.ContainsKey(itemsName[code]))
+                        {
+                            produts[itemsName[code]] += totalPrice1;
+                        }
+                        else
+                        {
+                            produts.Add(itemsName[code], totalPrice1);
+                        }
                         break;
 
                     case 102:
-                        quantity += 1;
+                        itemQuantity += 1;
                         Console.Write($"Enter the Quantity of {itemsName[code]} : ");
                         int quantity2 = int.Parse(Console.ReadLine());
                         double totalPrice2 = itemsPrice[code] * quantity2;
                         total += totalPrice2;
-                        produts.Add(itemsName[code], totalPrice2);
+
+                        if (produts.ContainsKey(itemsName[code]))
+                        {
+                            produts[itemsName[code]] += totalPrice2;
+                        }
+                        else
+                        {
+                            produts.Add(itemsName[code], totalPrice2);
+                        }
                         break;
 
                     case 103:
-                        quantity += 1;
+                        itemQuantity += 1;
                         Console.Write($"Enter the Quantity of {itemsName[code]} : ");
                         int quantity3 = int.Parse(Console.ReadLine());
                         double totalPrice3 = itemsPrice[code] * quantity3;
                         total += totalPrice3;
-                        produts.Add(itemsName[code], totalPrice3);
+
+                        if (produts.ContainsKey(itemsName[code]))
+                        {
+                            produts[itemsName[code]] += totalPrice3;
+                        }
+                        else
+                        {
+                            produts.Add(itemsName[code], totalPrice3);
+                        }
                         break;
 
                     case 104:
-                        quantity += 1;
+                        itemQuantity += 1;
                         Console.Write($"Enter the Quantity of {itemsName[code]} : ");
                         int quantity4 = int.Parse(Console.ReadLine());
                         double totalPrice4 = itemsPrice[code] * quantity4;
                         total += totalPrice4;
-                        produts.Add(itemsName[code], totalPrice4);
+                        if (produts.ContainsKey(itemsName[code]))
+                        {
+                            produts[itemsName[code]] += totalPrice4;
+                        }
+                        else
+                        {
+                            produts.Add(itemsName[code], totalPrice4);
+                        }
                         break;
 
                     case 105:
-                        quantity += 1;
+                        itemQuantity += 1;
                         Console.Write($"Enter the Quantity of {itemsName[code]} : ");
                         int quantity5 = int.Parse(Console.ReadLine());
                         double totalPrice5 = itemsPrice[code] * quantity5;
                         total += totalPrice5;
-                        produts.Add(itemsName[code], totalPrice5);
+                        if (produts.ContainsKey(itemsName[code]))
+                        {
+                            produts[itemsName[code]] += totalPrice5;
+                        }
+                        else
+                        {
+                            produts.Add(itemsName[code], totalPrice5);
+                        }
                         break;
 
                     case 106:
-                        quantity += 1;
+                        itemQuantity += 1;
                         Console.Write($"Enter the Quantity of {itemsName[code]} : ");
                         int quantity6 = int.Parse(Console.ReadLine());
                         double totalPrice6 = itemsPrice[code] * quantity6;
                         total += totalPrice6;
-                        produts.Add(itemsName[code], totalPrice6);
+                        if (produts.ContainsKey(itemsName[code]))
+                        {
+                            produts[itemsName[code]] += totalPrice6;
+                        }
+                        else
+                        {
+                            produts.Add(itemsName[code], totalPrice6);
+                        }
                         break;
                     default:
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -156,11 +202,11 @@ namespace Assessments
                 Console.WriteLine($"  {i.Key}                               {i.Value}");
             }
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("--------------------Total Quantity - " + quantity + "---------------------");
+            Console.WriteLine("--------------------Total Quantity - " + itemQuantity + "---------------------");
             Console.ResetColor();
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("------------------- Total Amount - " + (decimal)total + " -----------------------");
+            Console.WriteLine("------------------- Total Amount - " + total + " -----------------------");
             Console.ResetColor();
 
             Console.ReadKey();
