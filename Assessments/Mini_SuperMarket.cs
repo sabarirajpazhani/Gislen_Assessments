@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 
 namespace Assessments
 {
@@ -6,26 +6,15 @@ namespace Assessments
     {
         static void Main(string[] args)
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("------------------ Grovery Bill Calculator ------------------");
-            Console.WriteLine("||     ||    ||     ||    ||     ||     ||    ||     ||    ||");
-            Console.WriteLine("-------------------------------------------------------------");
-            Console.ResetColor();
-
-            Console.WriteLine("              Choose the Items for purchasing                   ");
-            Console.WriteLine("              101. Milk              - Rs.20.5                  ");
-            Console.WriteLine("              102. Coconut Oil       - Rs.50.0                  ");
-            Console.WriteLine("              103. Sugar             - Rs.15.5                  ");
-            Console.WriteLine("              104. Salt              - Rs.20.7                  ");
-            Console.WriteLine("              105. Rice              - Rs.50.0                  ");
-            Console.WriteLine("              106. Butter            - Rs.30.5                  ");
-
-            Console.WriteLine("                    For Billing Press '1'                  ");
-
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("____________________________________________________________");
-            Console.WriteLine("-------------------------------------------------------------");
-            Console.ResetColor();
+            Dictionary<int, string> itemsName = new Dictionary<int, string>()
+            {
+                {101, "Milk" },
+                {102, "CoconutOil" },
+                {103, "Sugar" },
+                {104, "Salt" },
+                {105, "Rice" },
+                {106,"Butter" }
+            };
 
             Dictionary<int, double> itemsPrice = new Dictionary<int, double>();
             itemsPrice.Add(101, 20.5);
@@ -35,15 +24,29 @@ namespace Assessments
             itemsPrice.Add(105, 50.0);
             itemsPrice.Add(106, 30.5);
 
-            Dictionary<int, string> itemsName = new Dictionary<int, string>()
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("------------------ Grovery Bill Calculator ------------------");
+            Console.WriteLine("||     ||    ||     ||    ||     ||     ||    ||     ||    ||");
+            Console.WriteLine("-------------------------------------------------------------");
+            Console.ResetColor();
+            Console.WriteLine("              Choose the Items for purchasing                   ");
+
+            var itemsNameList = itemsName.ToList();
+            var itemsPriceList = itemsPrice.ToList();
+            
+            for (int i = 0; i< itemsNameList.Count; i++)
             {
-                {101, "Milk" },
-                {102, "Coconut Oil" },
-                {103, "Sugar" },
-                {104, "Salt" },
-                {105, "Rice" },
-                {106,"Butter" }
-            };
+                Console.WriteLine($"{itemsNameList[i].Key, 18}. {itemsNameList[i].Value, -10}    Rs.{itemsPriceList[i].Value,-20}      ");
+            }
+            
+            Console.WriteLine("                    For Billing Press '1'                  ");
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("____________________________________________________________");
+            Console.WriteLine("-------------------------------------------------------------");
+            Console.ResetColor();
+
+            
 
             Dictionary<string, double> produts = new Dictionary<string, double>();
             Console.ForegroundColor = ConsoleColor.Green;
@@ -55,7 +58,6 @@ namespace Assessments
 
             while (true)
             {
-                //int code = int.Parse(Console.ReadLine());
                 int code = 0;
 
                 Start:
@@ -83,112 +85,48 @@ namespace Assessments
                     break;
                 }
 
-                switch (code)
+                bool flag = false;
+                int quantity = 0;
+                double totalPrice = 0;
+
+                while (true)
                 {
-                    case 101:
-
-                        itemQuantity += 1;
+                    if (itemsPrice.ContainsKey(code))
+                    {
                         Console.Write($"Enter the Quantity of {itemsName[code]} : ");
-                        int quantity1 = int.Parse(Console.ReadLine());
-                        double totalPrice1 = itemsPrice[code] * quantity1;
-                        total += totalPrice1;
+                        string input = Console.ReadLine();
 
-                        if (produts.ContainsKey(itemsName[code]))
+                        if(int.TryParse(input, out quantity))    //using TryParse
                         {
-                            produts[itemsName[code]] += totalPrice1;
+                            totalPrice = itemsPrice[code] * quantity;
+                            total += totalPrice;
                         }
                         else
                         {
-                            produts.Add(itemsName[code], totalPrice1);
+                            Console.WriteLine("Enter the Valid Quantity with using any Character or Symbols");
                         }
-                        break;
-
-                    case 102:
-                        itemQuantity += 1;
-                        Console.Write($"Enter the Quantity of {itemsName[code]} : ");
-                        int quantity2 = int.Parse(Console.ReadLine());
-                        double totalPrice2 = itemsPrice[code] * quantity2;
-                        total += totalPrice2;
+                        //quantity = int.Parse(Console.ReadLine()) ;
 
                         if (produts.ContainsKey(itemsName[code]))
                         {
-                            produts[itemsName[code]] += totalPrice2;
+                            produts[itemsName[code]] += totalPrice;
                         }
                         else
                         {
-                            produts.Add(itemsName[code], totalPrice2);
+                            produts.Add(itemsName[code], totalPrice);
+                            flag = true;
                         }
-                        break;
 
-                    case 103:
-                        itemQuantity += 1;
-                        Console.Write($"Enter the Quantity of {itemsName[code]} : ");
-                        int quantity3 = int.Parse(Console.ReadLine());
-                        double totalPrice3 = itemsPrice[code] * quantity3;
-                        total += totalPrice3;
-
-                        if (produts.ContainsKey(itemsName[code]))
+                        if (flag)
                         {
-                            produts[itemsName[code]] += totalPrice3;
+                            itemQuantity += 1;
+                            flag = false;
                         }
-                        else
-                        {
-                            produts.Add(itemsName[code], totalPrice3);
-                        }
+                        quantity = 0;
+                        totalPrice = 0;
                         break;
-
-                    case 104:
-                        itemQuantity += 1;
-                        Console.Write($"Enter the Quantity of {itemsName[code]} : ");
-                        int quantity4 = int.Parse(Console.ReadLine());
-                        double totalPrice4 = itemsPrice[code] * quantity4;
-                        total += totalPrice4;
-                        if (produts.ContainsKey(itemsName[code]))
-                        {
-                            produts[itemsName[code]] += totalPrice4;
-                        }
-                        else
-                        {
-                            produts.Add(itemsName[code], totalPrice4);
-                        }
-                        break;
-
-                    case 105:
-                        itemQuantity += 1;
-                        Console.Write($"Enter the Quantity of {itemsName[code]} : ");
-                        int quantity5 = int.Parse(Console.ReadLine());
-                        double totalPrice5 = itemsPrice[code] * quantity5;
-                        total += totalPrice5;
-                        if (produts.ContainsKey(itemsName[code]))
-                        {
-                            produts[itemsName[code]] += totalPrice5;
-                        }
-                        else
-                        {
-                            produts.Add(itemsName[code], totalPrice5);
-                        }
-                        break;
-
-                    case 106:
-                        itemQuantity += 1;
-                        Console.Write($"Enter the Quantity of {itemsName[code]} : ");
-                        int quantity6 = int.Parse(Console.ReadLine());
-                        double totalPrice6 = itemsPrice[code] * quantity6;
-                        total += totalPrice6;
-                        if (produts.ContainsKey(itemsName[code]))
-                        {
-                            produts[itemsName[code]] += totalPrice6;
-                        }
-                        else
-                        {
-                            produts.Add(itemsName[code], totalPrice6);
-                        }
-                        break;
-                    default:
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("You Entered Worng Item Code");
-                        Console.ResetColor();
-                        break;
+                    }
+                    
                 }
             }
 
@@ -196,13 +134,16 @@ namespace Assessments
             Console.WriteLine("-------------------------------------------------------------");
             Console.ResetColor();
             Console.WriteLine("Purchased Items");
-            Console.WriteLine("       Items                             Quantity Cost       ");
+
+            Console.WriteLine("-------------------------------------------------------------");
+            Console.WriteLine("       Items                |              Quantity Cost      ");
+            Console.WriteLine("-------------------------------------------------------------");
             foreach (KeyValuePair<string, double> i in produts)
             {
-                Console.WriteLine($"  {i.Key}                               {i.Value}");
+                Console.WriteLine($"\t{i.Key,-12} \t\t\t\t{i.Value,-10}");
             }
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("--------------------Total Quantity - " + itemQuantity + "---------------------");
+            Console.WriteLine("-------------------- Total Quantity - " + itemQuantity + " ---------------------");
             Console.ResetColor();
 
             Console.ForegroundColor = ConsoleColor.Yellow;
