@@ -113,11 +113,19 @@ namespace Assessments
                 {
                     if (itemsPrice.ContainsKey(code))
                     {
+                        
                         Console.Write($"Enter the Quantity of {itemsName[code]} : ");
                         string input = Console.ReadLine();
 
                         if(int.TryParse(input, out quantity))    //using TryParse
                         {
+                            if (quantity <= 0)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Quantity must be greater than Zero");
+                                Console.ResetColor();
+                                goto Start;
+                            }
                             total = itemsPrice[code] * quantity;
                             totalPrice += total;
                         }
@@ -127,6 +135,8 @@ namespace Assessments
                             Console.WriteLine("Enter the Valid Quantity with using any Character or Symbols");
                             Console.ResetColor();
                         }
+
+                       
 
                         //if (products.ContainsKey(itemsName[code]))
                         //{
