@@ -1,4 +1,6 @@
 ﻿﻿using System;
+using System.Collections;
+using System.Transactions;
 
 namespace Assessments
 {
@@ -6,216 +8,468 @@ namespace Assessments
     {
         static void Main(string[] args)
         {
-            //Console.ForegroundColor = ConsoleColor.Cyan;
-            //Console.WriteLine("------------------------ Grocery Shop -----------------------");
-            //Console.WriteLine("||     ||    ||     ||    ||     ||     ||    ||     ||    ||");
-            //Console.WriteLine("-------------------------------------------------------------");
-            //Console.ResetColor();
-
-            //Console.WriteLine("                    Chooose the Operation                    ");
-            //Console.WriteLine("1. Grocery Bill Calculator");
-
-
-
-
-
-
-
-
-
-
-
-
+            //Data
             Dictionary<int, string> itemsName = new Dictionary<int, string>()
-            {
-                {101, "Milk" },
-                {102, "CoconutOil" },
-                {103, "Sugar" },
-                {104, "Salt" },
-                {105, "Rice" },
-                {106,"Butter" }
-            };
+                {
+                    {101, "Milk" },
+                    {102, "CoconutOil" },
+                    {103, "Sugar" },
+                    {104, "Salt" },
+                    {105, "Rice" },
+                    {106,"Butter" }
+                };
 
             Dictionary<int, double> itemsPrice = new Dictionary<int, double>()
-            {
-                {101, 20.5},
-                {102, 50.0},
-                {103, 15.5},
-                {104, 20.7},
-                {105, 50.0},
-                {106, 30.5}
-            };
+                {
+                    {101, 20.5},
+                    {102, 50.0},
+                    {103, 15.5},
+                    {104, 20.7},
+                    {105, 50.0},
+                    {106, 30.5}
+                };
 
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("------------------ Grovery Bill Calculator ------------------");
-            Console.WriteLine("||     ||    ||     ||    ||     ||     ||    ||     ||    ||");
-            Console.WriteLine("-------------------------------------------------------------");
-            Console.ResetColor();
-            Console.WriteLine("              Choose the Items for purchasing                   ");
+            Dictionary<string, (double price, int prodQuantity)> products = new Dictionary<string, (double price, int prodQuantity)>();         //Dictionary for storing pirce and quantity of items details
 
-            var itemsNameList = itemsName.ToList();
-            var itemsPriceList = itemsPrice.ToList();
-            
-            for (int i = 0; i< itemsNameList.Count; i++)
-            {
-                Console.WriteLine($"{itemsNameList[i].Key, 18}. {itemsNameList[i].Value, -10}    Rs.{itemsPriceList[i].Value,-20}      ");
-            }
-            
-            Console.WriteLine("                    For Billing Press '1'                  ");
-
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("============================================================");
-            Console.ResetColor();
-
-            Dictionary<string, (double price, int prodQuantity)> products = new Dictionary<string, (double price, int prodQuantity)>();
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Here You can Enter the code of Items for purchasing");
-            Console.ResetColor();
-
-            int itemQuantity = 0;
-            double totalPrice = 0;
+            Hashtable purchasedDetails = new Hashtable();        //for storing purchased details
 
             while (true)
             {
-                int code = 0;
+                 MainStart:
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("------------------------ Grocery Shop -----------------------");
+                Console.WriteLine("||     ||    ||     ||    ||     ||     ||    ||     ||    ||");
+                Console.WriteLine("-------------------------------------------------------------");
+                Console.ResetColor();
 
-                Start:
+                Console.WriteLine("                    Chooose the Operation                    ");
+                Console.WriteLine("                1. Grocery Bill Calculator                   ");
+                Console.WriteLine("                2. Add the Grocery Items (Only Owner)        ");
+                Console.WriteLine("                3. Remove the Groceery Items (Only Owner)    ");
+                Console.WriteLine("                4. View the Overall Sales (Only Owner)       ");
+                Console.WriteLine("                5. Exist                                     ");
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("=============================================================");
+                Console.ResetColor();
+
+ 
+                int choice = 0;
+
+                Start1:
                 try
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write("Enter the Item Code / Proceed Bill Enter '1': ");
+                    Console.Write("Enter the Choice for Grocery Operation : ");
                     Console.ResetColor();
 
-                    code = int.Parse(Console.ReadLine());
+                    choice = int.Parse(Console.ReadLine());
                 }
                 catch (FormatException e)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid input! Please enter a valid Code in Number digits only. \nAlphabets or symbols or Whitespace are not allowed.");
+                    Console.WriteLine("Invalid Choice! Please enter a valid Choice in Number digits only. \nAlphabets or symbols or Whitespace are not allowed.");
                     Console.ResetColor();
-                    goto Start;
+                    goto Start1;
                 }
 
-                if (code == 1)
+                switch (choice)
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("Thank You For Purchasing");
-                    Console.ResetColor();
-                    break;
-                }
+                    case 1:                        //Grocery Bill Calculator
+                        //Console.Clear();
 
-                bool flag = false;
-                int quantity = 0;
-                double total = 0;
+                        Console.WriteLine();
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("           You Choose the Grocery Bill Calculator           ");
+                        Console.ResetColor();
 
-                while (true)
-                {
-                    if (itemsPrice.ContainsKey(code))
-                    {
-                        
-                        Console.Write($"Enter the Quantity of {itemsName[code]} : ");
-                        string input = Console.ReadLine();
+                        Console.WriteLine();
+                        Console.WriteLine();
+                        //Console.Clear();
 
-                        if(int.TryParse(input, out quantity))    //using TryParse
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("------------------ Grovery Bill Calculator ------------------");
+                        Console.WriteLine("||     ||    ||     ||    ||     ||     ||    ||     ||    ||");
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine("              Choose the Items for purchasing                   ");
+
+                        var itemsNameList = itemsName.ToList();
+                        var itemsPriceList = itemsPrice.ToList();
+
+                        for (int i = 0; i < itemsNameList.Count; i++)
                         {
-                            if (quantity <= 0)
+                            Console.WriteLine($"{itemsNameList[i].Key,18}. {itemsNameList[i].Value,-10}    Rs.{itemsPriceList[i].Value,-20}      ");
+                        }
+
+                        Console.WriteLine("                    For Billing Press '1'                  ");
+
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("============================================================");
+                        Console.ResetColor();
+
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.Write("Enter the Customer Name : ");                      //Customer Name
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Red;
+
+                        String CustomerName = Console.ReadLine();
+                        Console.ResetColor();
+
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("Here You can Enter the code of Items for purchasing");
+                        Console.ResetColor();
+                        Console.WriteLine();
+
+                        int itemQuantity = 0;
+                        double totalPrice = 0;
+
+                        while (true)
+                        {
+                            int code = 0;
+
+                        Start2:
+                            try
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.Write("Enter the Item Code / Proceed Bill Enter '1': ");
+                                Console.ResetColor();
+
+                                code = int.Parse(Console.ReadLine());
+                            }
+                            catch (FormatException e)
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("Quantity must be greater than Zero");
+                                Console.WriteLine("Invalid input! Please enter a valid Code in Number digits only. \nAlphabets or symbols or Whitespace are not allowed.");
                                 Console.ResetColor();
-                                goto Start;
+                                goto Start2;
                             }
-                            total = itemsPrice[code] * quantity;
-                            totalPrice += total;
+
+                            if (code == 1)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.WriteLine("Thank You For Purchasing");
+                                Console.ResetColor();
+                                break;
+                            }
+
+                            bool flag = false;
+                            int quantity = 0;
+                            double total = 0;
+
+                            while (true)
+                            {
+                                if (itemsPrice.ContainsKey(code))
+                                {
+
+                                    Console.Write($"Enter the Quantity of {itemsName[code]} : ");
+                                    string input = Console.ReadLine();
+
+                                    if (int.TryParse(input, out quantity))    //using TryParse
+                                    {
+                                        if (quantity <= 0)
+                                        {
+                                            Console.ForegroundColor = ConsoleColor.Red;
+                                            Console.WriteLine("Quantity must be greater than Zero");
+                                            Console.ResetColor();
+                                            goto Start2;
+                                        }
+                                        total = itemsPrice[code] * quantity;
+                                        totalPrice += total;
+                                    }
+                                    else
+                                    {
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine("Enter the Valid Quantity with using any Character or Symbols");
+                                        Console.ResetColor();
+                                    }
+
+
+
+                                    //if (products.ContainsKey(itemsName[code]))
+                                    //{
+
+                                    //    products[itemsName[code]] += total;
+                                    //}
+                                    //else
+                                    //{
+                                    //    products.Add(itemsName[code], total);
+                                    //    flag = true;    
+                                    //}
+
+
+
+                                    string item = itemsName[code];
+
+                                    if (products.ContainsKey(item))
+                                    {
+                                        var existing = products[item];
+                                        products[item] = (existing.price + total, existing.prodQuantity + quantity);
+                                    }
+                                    else
+                                    {
+                                        products[item] = (total, quantity);
+                                        flag = true;
+                                    }
+
+
+                                    if (flag)
+                                    {
+                                        itemQuantity += 1;
+                                        flag = false;
+                                    }
+                                    quantity = 0;
+                                    total = 0;
+                                    break;
+                                }
+                                else
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("Invalid Code. Choose from Items Table");
+                                    Console.ResetColor();
+                                    break;
+                                }
+
+                            }
+                        }
+
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.WriteLine("                 Bill for Purchased Items                    ");
+                        Console.ResetColor();
+
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.Write("Name      : ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.WriteLine(CustomerName);
+                        Console.ResetColor();
+
+                        DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.Write("Date      : ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.WriteLine(date);
+                        Console.ResetColor();
+
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.WriteLine("    Items           |     Quantity       | Cost Per Item    ");
+                        Console.WriteLine("-------------------------------------------------------------");
+
+                        foreach (KeyValuePair<string, (double price, int prodQuantity)> i in products)
+                        {
+                            Console.WriteLine($"{i.Key,-12} \t\t{i.Value.prodQuantity}\t\t\t{i.Value.price,-10}    ");
+                        }
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("-------------------- Total Quantity - " + itemQuantity + " ---------------------");
+                        Console.ResetColor();
+
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("------------------- Total Amount - " + totalPrice + " -----------------------");
+                        Console.ResetColor();
+
+                        
+                        Hashtable PriceAndDate = new Hashtable();
+                        
+                        PriceAndDate.Add("TotalPrice",totalPrice);
+                        PriceAndDate.Add("Date",date);
+
+                        purchasedDetails.Add(CustomerName,PriceAndDate);
+
+
+                        Console.WriteLine();
+
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine("             * ~   Thank You for Purchasing :)  ~ *             ");
+                        Console.ResetColor();
+
+                        Console.WriteLine();
+                        Console.WriteLine();
+
+
+                        
+                        //Console.ForegroundColor = ConsoleColor.Yellow;
+                        //Console.Write("If you Want to Exist from Bill calculator (Y/N) : ");
+                        //Console.ResetColor();
+                        //char ch = char.Parse(Console.ReadLine());
+                        //if(ch =='y' || ch == 'Y' )
+                        //{
+                        //    Console.Clear();
+                        //    goto MainStart;
+                        //}
+                        //else
+                        //{
+                        //    break;
+                        //}
+                        //Console.ReadKey();
+                        break;
+
+
+                    case 2:                                                        //Add the Grocery Items (Only Owner) 
+
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine();
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("       You Choose to Add the Grocery Items (Only Owner)      ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine();
+                        Console.WriteLine();
+
+                        int count = 0;
+
+                        ErrorStart1:
+                        try
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            Console.Write("Enter the Number of Items to be Added in Database: ");
+                            Console.ResetColor();
+                            int Count = int.Parse(Console.ReadLine());
+                            count = Count;
+
+                        }
+                        catch (FormatException e)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Invalid input! Please enter a Number digits only. \nAlphabets or symbols or Whitespace are not allowed.");
+                            goto ErrorStart1;
+                        }
+
+                        for(int i =0; i<count; i++)
+                        {
+
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Enter the Item Name to be Added: ");
+                            Console.ResetColor();
+                            String addItemsName = Console.ReadLine();
+
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine($"Enter the Code of {addItemsName}: ");
+                            Console.ResetColor();
+                            int addItemCode = int.Parse(Console.ReadLine());
+
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine($"Enter the Price of {addItemsName}: ");
+                            Console.ResetColor();
+                            double addItemPrice = double.Parse(Console.ReadLine());
+
+                            if(!itemsName.ContainsKey(addItemCode) || !itemsName.ContainsValue(addItemsName)) 
+                            {
+                                itemsName.Add(addItemCode, addItemsName);
+                                itemsPrice.Add(addItemCode, addItemPrice);
+
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Item added successfully.");
+                                Console.ResetColor();
+                            }
+                            else
+                            {
+                                if (itemsName.ContainsKey(addItemCode))
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine($"Item code {addItemCode} already exists. Skipping addition.");
+                                    Console.ResetColor();
+                                }
+                                if (itemsName.ContainsValue(addItemsName))
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine($"Item code {addItemsName} already exists. Skipping addition.");
+                                    Console.ResetColor();
+                                }
+                                
+                            }
+
+                            Console.ForegroundColor = ConsoleColor.Cyan;
+                            Console.WriteLine("                 --------------------------                  ");
+                            Console.ResetColor();
+
+
+                        }
+                        //Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        //Console.Write("If you want to add somemore Items (Y/N): ");
+                        //Console.ResetColor();
+
+                        //char ch = char.Parse(Console.ReadLine());
+                        //if (ch == 'y' || ch == 'Y')
+                        //{
+                        //    goto ErrorStart1;
+                        //}
+                        //else
+                        //{
+                        //    break;
+                        //}
+                        break;
+
+                    case 4:                                                        //View the Overall Sales (Only Owner) 
+
+                    StartAth:
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine();
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("         You Choose to View the Overall Sales (Only Owner)        ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine();
+                        Console.WriteLine();
+
+                       
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.Write("Enter the Owner User Name:  ");                      //Owner user name
+                        Console.ResetColor();
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        String userName = Console.ReadLine();
+                        Console.ResetColor();
+
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.Write("Enter the Owner Password:  ");                      //Owner Password
+                        Console.ResetColor();
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        String pass = Console.ReadLine();
+                        Console.ResetColor();
+
+                        if(userName == "admin"  && pass =="12345")
+                        {
+                            Console.ForegroundColor = ConsoleColor.Cyan;
+                            Console.WriteLine("-------------------------------------------------------------");
+                            Console.WriteLine("| Customer_Name\t\tPurchased_Cost\t\tPurchased_Date");
+                            Console.WriteLine("-------------------------------------------------------------");
+                            
+                            foreach (DictionaryEntry i in purchasedDetails)
+                            {
+                                Hashtable details = (Hashtable)i.Value;
+                                Console.WriteLine($"\t{i.Key}\t\t{details["TotalPrice"]} \t\t\t{details["Date"]}");
+                            }
+                            Console.WriteLine("=============================================================");
                         }
                         else
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Enter the Valid Quantity with using any Character or Symbols");
+                            Console.Write("Wrong User Nmae and password :(\n Re-Enter the User Name and Password");                      
                             Console.ResetColor();
+                            goto StartAth;
                         }
 
-                       
-
-                        //if (products.ContainsKey(itemsName[code]))
-                        //{
-
-                        //    products[itemsName[code]] += total;
-                        //}
-                        //else
-                        //{
-                        //    products.Add(itemsName[code], total);
-                        //    flag = true;    
-                        //}
-
-
-
-                        string item = itemsName[code];
-
-                        if (products.ContainsKey(item))
-                        {
-                            var existing = products[item];
-                            products[item] = (existing.price + total, existing.prodQuantity + quantity);
-                        }
-                        else
-                        {
-                            products[item] = (total, quantity);
-                            flag = true;
-                        }
-
-
-                        if (flag)
-                        {
-                            itemQuantity += 1;
-                            flag = false;
-                        }
-                        quantity = 0;
-                        total = 0;
                         break;
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Invalid Code. Choose from Items Table");
-                        Console.ResetColor();
-                        break;
-                    }
-                    
+
                 }
             }
-
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("-------------------------------------------------------------");
-            Console.ResetColor();
-
-            Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.WriteLine("                 Bill for Purchased Items                    ");
-            Console.ResetColor();
-
-            Console.WriteLine("-------------------------------------------------------------");
-            Console.WriteLine("    Items           |     Quantity       | Cost Per Item    ");
-            Console.WriteLine("-------------------------------------------------------------");
-
-            foreach (KeyValuePair<string, (double price, int prodQuantity) > i in products)
-            {
-                Console.WriteLine($"{i.Key,-12} \t\t{i.Value.prodQuantity}\t\t\t{i.Value.price, -10}    ");
-            }
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("-------------------- Total Quantity - " + itemQuantity + " ---------------------");
-            Console.ResetColor();
-
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("------------------- Total Amount - " + totalPrice + " -----------------------");
-            Console.ResetColor();
-
-            Console.WriteLine();
-
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("             * ~   Thank You for Purchasing   ~ *             ");
-            Console.ResetColor();
-
-            Console.ReadKey();
         }
     }
 }
