@@ -6,6 +6,26 @@ namespace Assessments
     {
         static void Main(string[] args)
         {
+            //Console.ForegroundColor = ConsoleColor.Cyan;
+            //Console.WriteLine("------------------------ Grocery Shop -----------------------");
+            //Console.WriteLine("||     ||    ||     ||    ||     ||     ||    ||     ||    ||");
+            //Console.WriteLine("-------------------------------------------------------------");
+            //Console.ResetColor();
+
+            //Console.WriteLine("                    Chooose the Operation                    ");
+            //Console.WriteLine("1. Grocery Bill Calculator");
+
+
+
+
+
+
+
+
+
+
+
+
             Dictionary<int, string> itemsName = new Dictionary<int, string>()
             {
                 {101, "Milk" },
@@ -47,7 +67,7 @@ namespace Assessments
             Console.WriteLine("============================================================");
             Console.ResetColor();
 
-            Dictionary<string, double> produts = new Dictionary<string, double>();
+            Dictionary<string, (double price, int prodQuantity)> products = new Dictionary<string, (double price, int prodQuantity)>();
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Here You can Enter the code of Items for purchasing");
@@ -108,15 +128,32 @@ namespace Assessments
                             Console.ResetColor();
                         }
 
-                        if (produts.ContainsKey(itemsName[code]))
+                        //if (products.ContainsKey(itemsName[code]))
+                        //{
+
+                        //    products[itemsName[code]] += total;
+                        //}
+                        //else
+                        //{
+                        //    products.Add(itemsName[code], total);
+                        //    flag = true;    
+                        //}
+
+
+
+                        string item = itemsName[code];
+
+                        if (products.ContainsKey(item))
                         {
-                            produts[itemsName[code]] += total;
+                            var existing = products[item];
+                            products[item] = (existing.price + total, existing.prodQuantity + quantity);
                         }
                         else
                         {
-                            produts.Add(itemsName[code], total);
+                            products[item] = (total, quantity);
                             flag = true;
                         }
+
 
                         if (flag)
                         {
@@ -147,12 +184,12 @@ namespace Assessments
             Console.ResetColor();
 
             Console.WriteLine("-------------------------------------------------------------");
-            Console.WriteLine("       Items                |              Quantity Cost      ");
+            Console.WriteLine("    Items           |     Quantity       | Cost Per Item    ");
             Console.WriteLine("-------------------------------------------------------------");
 
-            foreach (KeyValuePair<string, double> i in produts)
+            foreach (KeyValuePair<string, (double price, int prodQuantity) > i in products)
             {
-                Console.WriteLine($"\t{i.Key,-12} \t\t\t\t{i.Value,-10}");
+                Console.WriteLine($"{i.Key,-12} \t\t{i.Value.prodQuantity}\t\t\t{i.Value.price, -10}    ");
             }
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("-------------------- Total Quantity - " + itemQuantity + " ---------------------");
