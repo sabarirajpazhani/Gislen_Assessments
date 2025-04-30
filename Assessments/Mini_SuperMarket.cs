@@ -16,13 +16,15 @@ namespace Assessments
                 {106,"Butter" }
             };
 
-            Dictionary<int, double> itemsPrice = new Dictionary<int, double>();
-            itemsPrice.Add(101, 20.5);
-            itemsPrice.Add(102, 50.0);
-            itemsPrice.Add(103, 15.5);
-            itemsPrice.Add(104, 20.7);
-            itemsPrice.Add(105, 50.0);
-            itemsPrice.Add(106, 30.5);
+            Dictionary<int, double> itemsPrice = new Dictionary<int, double>()
+            {
+                {101, 20.5},
+                {102, 50.0},
+                {103, 15.5},
+                {104, 20.7},
+                {105, 50.0},
+                {106, 30.5}
+            };
 
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("------------------ Grovery Bill Calculator ------------------");
@@ -42,19 +44,17 @@ namespace Assessments
             Console.WriteLine("                    For Billing Press '1'                  ");
 
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("____________________________________________________________");
-            Console.WriteLine("-------------------------------------------------------------");
+            Console.WriteLine("============================================================");
             Console.ResetColor();
 
-            
-
             Dictionary<string, double> produts = new Dictionary<string, double>();
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Here You can Enter the code of Items for purchasing");
             Console.ResetColor();
 
             int itemQuantity = 0;
-            double total = 0;
+            double totalPrice = 0;
 
             while (true)
             {
@@ -87,7 +87,7 @@ namespace Assessments
 
                 bool flag = false;
                 int quantity = 0;
-                double totalPrice = 0;
+                double total = 0;
 
                 while (true)
                 {
@@ -98,22 +98,23 @@ namespace Assessments
 
                         if(int.TryParse(input, out quantity))    //using TryParse
                         {
-                            totalPrice = itemsPrice[code] * quantity;
-                            total += totalPrice;
+                            total = itemsPrice[code] * quantity;
+                            totalPrice += total;
                         }
                         else
                         {
+                            Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine("Enter the Valid Quantity with using any Character or Symbols");
+                            Console.ResetColor();
                         }
-                        //quantity = int.Parse(Console.ReadLine()) ;
 
                         if (produts.ContainsKey(itemsName[code]))
                         {
-                            produts[itemsName[code]] += totalPrice;
+                            produts[itemsName[code]] += total;
                         }
                         else
                         {
-                            produts.Add(itemsName[code], totalPrice);
+                            produts.Add(itemsName[code], total);
                             flag = true;
                         }
 
@@ -123,7 +124,14 @@ namespace Assessments
                             flag = false;
                         }
                         quantity = 0;
-                        totalPrice = 0;
+                        total = 0;
+                        break;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid Code. Choose from Items Table");
+                        Console.ResetColor();
                         break;
                     }
                     
@@ -133,11 +141,15 @@ namespace Assessments
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("-------------------------------------------------------------");
             Console.ResetColor();
-            Console.WriteLine("Purchased Items");
+
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine("                 Bill for Purchased Items                    ");
+            Console.ResetColor();
 
             Console.WriteLine("-------------------------------------------------------------");
             Console.WriteLine("       Items                |              Quantity Cost      ");
             Console.WriteLine("-------------------------------------------------------------");
+
             foreach (KeyValuePair<string, double> i in produts)
             {
                 Console.WriteLine($"\t{i.Key,-12} \t\t\t\t{i.Value,-10}");
@@ -147,7 +159,13 @@ namespace Assessments
             Console.ResetColor();
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("------------------- Total Amount - " + total + " -----------------------");
+            Console.WriteLine("------------------- Total Amount - " + totalPrice + " -----------------------");
+            Console.ResetColor();
+
+            Console.WriteLine();
+
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("             * ~   Thank You for Purchasing   ~ *             ");
             Console.ResetColor();
 
             Console.ReadKey();
