@@ -12,7 +12,8 @@ namespace Assessments
     {
         public static void isValidString(string name)
         {
-            if (char.IsDigit(name[0]) || char.IsDigit(name[1]))
+            
+            if (char.IsDigit(name[0]))
             {
                 throw new InvalidNameException("The Name Should not be Number make them to correct the Alphabet");
             }
@@ -149,7 +150,9 @@ namespace Assessments
                         }
                         catch (InvalidNameException e)
                         {
+                            Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine($"{e.Message}");
+                            Console.ResetColor();
                             goto Custname;
                         } 
 
