@@ -53,6 +53,7 @@ namespace Assessments
                 Console.WriteLine("=============================================================");
                 Console.ResetColor();
 
+                int Operation = 5;
  
                 int choice = 0;
 
@@ -64,6 +65,14 @@ namespace Assessments
                     Console.ResetColor();
 
                     choice = int.Parse(Console.ReadLine());
+
+                    if(choice > Operation || choice == 0)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid Choice! Please Enter the Valid Number as Given in Table.");
+                        Console.ResetColor();
+                        goto Start1;
+                    }
                 }
                 catch (FormatException e)
                 {
@@ -512,6 +521,7 @@ namespace Assessments
                         }
 
                         break;
+
                     case 4:                                                        //View the Overall Sales (Only Owner) 
 
                         StartAth:
@@ -567,9 +577,50 @@ namespace Assessments
                         }
 
                         break;
-                }
 
+                    case 5:
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine();
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("                     You Choose to Exist :)                  ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine();
+                        Console.WriteLine();
+
+                        for(int i =  5; i> 0; i--)
+                        {
+                            Console.Clear();
+                            Console.ForegroundColor = ConsoleColor.Cyan;
+                            Console.Write("                 Existing From Grocery: ");
+                            Console.ResetColor();
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($" {i} ");
+                            Console.ResetColor();
+                            Thread.Sleep(1000);
+                        }
+
+                       
+
+                        break;
+                }
+                
+                if(choice == 5)
+                {
+                    
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine("                      ~ * Thank You * ~                    ");
+                    Console.ResetColor();
+                    break;
+                }
             }
+            Console.ReadKey();
         }
     }
 }
