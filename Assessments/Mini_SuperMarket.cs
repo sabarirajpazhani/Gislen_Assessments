@@ -387,17 +387,17 @@ namespace Assessments
                         {
 
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("Enter the Item Name to be Added: ");
+                            Console.Write("Enter the Item Name to be Added: ");
                             Console.ResetColor();
                             String addItemsName = Console.ReadLine();
 
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"Enter the Code of {addItemsName}: ");
+                            Console.Write($"Enter the Code of {addItemsName}: ");
                             Console.ResetColor();
                             int addItemCode = int.Parse(Console.ReadLine());
 
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"Enter the Price of {addItemsName}: ");
+                            Console.Write($"Enter the Price of {addItemsName}: ");
                             Console.ResetColor();
                             double addItemPrice = double.Parse(Console.ReadLine());
 
