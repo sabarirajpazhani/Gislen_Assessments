@@ -290,7 +290,7 @@ namespace Assessment2
                             {
                                 List<ExpenseAndPrice> expenseList = new List<ExpenseAndPrice>();
 
-                                foreach(ExpenseAndPrice k in expenseAndPriceList)
+                                foreach(ExpenseAndPrice k in expenseAndPriceList) 
                                 {
                                     totalAmount += k.ExpenseAmount;
                                     Console.WriteLine($"   \t{k.ExpenseName}\t\t\t\t{k.ExpenseAmount}");
