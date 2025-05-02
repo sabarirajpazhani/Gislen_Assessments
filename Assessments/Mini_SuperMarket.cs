@@ -646,7 +646,11 @@ namespace Assessments
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("-----------------------------------------------------------");
                         Console.ResetColor();
-                        //Console.ReadKey();
+
+                        Console.WriteLine("Press Any Key to Continue.....");
+                        Console.ReadKey();
+
+
                         break;
 
                     case 6:
