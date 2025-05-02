@@ -4,15 +4,28 @@ using System.Transactions;
 
 namespace Assessments
 {
+    public class InvalidNameException : Exception
+    {
+        public InvalidNameException(string message) : base(message) { }
+    }
     public class Mini_SuperMarket
     {
+        public static void isValidString(string name)
+        {
+            if (char.IsDigit(name[0]) || char.IsDigit(name[1]))
+            {
+                throw new InvalidNameException("The Name Should not be Number make them to correct the Alphabet");
+            }
+
+            
+        }
         static void Main(string[] args)
         {
             //Data
             Dictionary<int, string> itemsName = new Dictionary<int, string>()
                 {
                     {101, "Milk" },
-                    {102, "CoconutOil" },
+                    {102, "Oil" },
                     {103, "Sugar" },
                     {104, "Salt" },
                     {105, "Rice" },
@@ -47,13 +60,14 @@ namespace Assessments
                 Console.WriteLine("                2. Add the Grocery Items (Only Owner)        ");
                 Console.WriteLine("                3. Remove the Groceery Items (Only Owner)    ");
                 Console.WriteLine("                4. View the Overall Sales (Only Owner)       ");
-                Console.WriteLine("                5. Exist                                     ");
+                Console.WriteLine("                5. View All the Items                        ");
+                Console.WriteLine("                6. Exist                                     ");
 
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("=============================================================");
                 Console.ResetColor();
 
-                int Operation = 5;
+                int Operation = 6;
  
                 int choice = 0;
 
@@ -118,13 +132,26 @@ namespace Assessments
                         Console.WriteLine("============================================================");
                         Console.ResetColor();
 
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
-                        Console.Write("Enter the Customer Name : ");                      //Customer Name
-                        Console.ResetColor();
-                        Console.ForegroundColor = ConsoleColor.Red;
+                        String CustomerName ="Empty";
 
-                        String CustomerName = Console.ReadLine();
-                        Console.ResetColor();
+                        Custname:
+                        try
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.Write("Enter the Customer Name : ");                      //Customer Name
+                            Console.ResetColor();
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            String customerName = Console.ReadLine();
+                            Console.ResetColor();
+
+                            isValidString(customerName);
+                            CustomerName = customerName;
+                        }
+                        catch (InvalidNameException e)
+                        {
+                            Console.WriteLine($"{e.Message}");
+                            goto Custname;
+                        } 
 
                         Console.WriteLine();
                         Console.ForegroundColor = ConsoleColor.Yellow;
@@ -431,7 +458,7 @@ namespace Assessments
                         break;
 
 
-                    case 3:
+                    case 3:                                                 //Removing the Grocery Items
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine("-------------------------------------------------------------");
                         Console.ResetColor();
@@ -469,12 +496,12 @@ namespace Assessments
                         {
 
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("Enter the Item Name to be Delete: ");
+                            Console.Write("Enter the Item Name to be Delete: ");
                             Console.ResetColor();
                             String addItemsName = Console.ReadLine();
 
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"Enter the Code of {addItemsName}: ");
+                            Console.Write($"Enter the Code of {addItemsName}: ");
                             Console.ResetColor();
                             int addItemCode = int.Parse(Console.ReadLine());
 
@@ -578,7 +605,48 @@ namespace Assessments
 
                         break;
 
+
                     case 5:
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine();
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.WriteLine("             You Choose to View all the Items :)             ");
+                        Console.ResetColor();
+                        Console.WriteLine();
+                        Console.WriteLine();
+
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("=============================================================");
+                        Console.ResetColor();
+                        Console.WriteLine("| Item_Code\t\tItem_Name\t\tItem_Price  |");
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("=============================================================");
+                        Console.ResetColor();
+
+                        foreach(KeyValuePair<int, String > i in itemsName)
+                        {
+                            Console.WriteLine($"\t{i.Key}\t\t{i.Value} \t\t\t{itemsPrice[i.Key]}");
+                        }
+
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("-----------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write($"                     Total Items : ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine(itemsName.Count);
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("-----------------------------------------------------------");
+                        Console.ResetColor();
+                        //Console.ReadKey();
+                        break;
+
+                    case 6:
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine("-------------------------------------------------------------");
                         Console.ResetColor();
@@ -610,11 +678,11 @@ namespace Assessments
                         break;
                 }
                 
-                if(choice == 5)
+                if(choice == 6)
                 {
                     
                     Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
                     Console.WriteLine("                      ~ * Thank You * ~                    ");
                     Console.ResetColor();
                     break;
