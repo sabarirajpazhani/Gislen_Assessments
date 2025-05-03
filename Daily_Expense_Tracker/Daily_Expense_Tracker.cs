@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
 using System.Xml.Linq;
@@ -19,6 +20,8 @@ namespace Assessment2
         public string UserEmail { get; set; }
         public DateOnly Date { get; set; }
     }
+
+
 
     public class InvalidNameException : Exception
     {
@@ -41,6 +44,145 @@ namespace Assessment2
             string pattern = @"^[a-zA-Z0-9._%+-]+@gmail\.com$";
 
             return Regex.IsMatch(email, pattern);
+        }
+
+        public static bool verifyNameEmail(Dictionary<int, Hashtable> CodeEuserNamePass, int UserCodeAuth)   //Verfiy the user Name and Email
+        {
+            string UserNameAuth = "Empty";
+            string UserEmailAuth = "Empty";
+
+            bool verifyName = false;
+            bool verifyEmail = false;   
+
+            UserName:
+            try
+            {
+
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Write("Enter the User Name: ");
+                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                String userNameAuth = Console.ReadLine();
+                Console.ResetColor();
+                if (userNameAuth.Length <3)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Please Enter the Name Properly");
+                    Console.ResetColor();
+                    goto UserName;
+                }
+                isValidString(userNameAuth);
+                Hashtable userName = CodeEuserNamePass[UserCodeAuth];
+                List<NameAndPass> NameList = (List<NameAndPass>)userName[UserCodeAuth];
+                String storingName = NameList[0].UserName;
+                if (storingName == userNameAuth)
+                {
+                    UserNameAuth = userNameAuth;
+                    verifyName = true;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("The name is not valid for this code");
+                    Console.ResetColor();
+                    goto UserName;
+                }
+
+            UserEmail:
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Write("Enter the User Email: ");
+                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                String userEmailAuth = Console.ReadLine();
+                Console.ResetColor();
+
+                if (UserEmailAuth.Length == 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("Please Enter the Email");
+                    Console.ResetColor();
+                    goto UserEmail;
+                }
+                else if (!isValidEmail(userEmailAuth))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Please Enter valid Email");
+                    Console.ResetColor();
+                    goto UserEmail;
+                }
+                else
+                {
+                    Hashtable userEmail = CodeEuserNamePass[UserCodeAuth];
+                    List<NameAndPass> EmailList = (List<NameAndPass>)userEmail[UserCodeAuth];
+                    String StoredUser = EmailList[0].UserEmail;
+                    if (StoredUser == userEmailAuth)
+                    {
+                        UserEmailAuth = userEmailAuth;
+                        verifyEmail = true;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("User Email not Match for this Code");
+                        goto UserEmail;
+                    }
+                }
+            }
+            catch (InvalidNameException e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(e.Message);
+                Console.ResetColor();
+                goto UserName;
+            }
+
+            return (verifyEmail && verifyName);
+        }
+
+        public static void displayExpensePrice(Dictionary<int, Hashtable> CodeEuserNamePass, int UserCodeAuth, Dictionary<int, Hashtable> Expense)
+        {
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("User Name : ");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Hashtable userName = CodeEuserNamePass[UserCodeAuth];
+            List<NameAndPass> nameList = (List<NameAndPass>)userName[UserCodeAuth];
+            Console.WriteLine(nameList[0].UserName);
+            Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("User Code : ");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(UserCodeAuth);
+            Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("Date : ");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Hashtable dateData = CodeEuserNamePass[UserCodeAuth];
+            List<NameAndPass> dateList = (List<NameAndPass>)dateData[UserCodeAuth];
+            Console.WriteLine(dateList[0].Date);
+            Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("------------------------------------------------------------------");
+            Console.WriteLine("|  \tExpense_Name\t\t\tAmount_Spent\t        |");
+            Console.WriteLine("------------------------------------------------------------------");
+            Console.ResetColor();
+
+            Hashtable userExpanseTable = Expense[UserCodeAuth];
+            foreach (DictionaryEntry i in userExpanseTable)
+            {
+                List<ExpenseAndPrice> expenseList = i.Value as List<ExpenseAndPrice>;
+                foreach (ExpenseAndPrice k in expenseList)
+                {
+                    Console.WriteLine($"   \t{k.ExpenseName}\t\t\t\t{k.ExpenseAmount}");
+                }
+            }
+
         }
 
         static int userCode = 100;
@@ -72,10 +214,11 @@ namespace Assessment2
                 Console.ResetColor();
                 Console.WriteLine("                    1. Enter the Expense to Record                ");
                 Console.WriteLine("                    2. View all the Expese                        ");
-                Console.WriteLine("                    3. Total Amount Spent                         ");
-                Console.WriteLine("                    4. Highest and Lowest Expense                 ");
-                Console.WriteLine("                    5. Average Expense                            ");
-                Console.WriteLine("                    6. Exist                                      ");
+                Console.WriteLine("                    3. Expense Summary                            ");
+                Console.WriteLine("                         - Total Amount Spent                     ");
+                Console.WriteLine("                         - Highest and Lowest Expense             ");
+                Console.WriteLine("                         - Average Expense                        ");
+                Console.WriteLine("                    4. Exist                                      ");
 
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("------------------------------------------------------------------");
@@ -85,7 +228,7 @@ namespace Assessment2
                 int choice = 0;
                 int Operation = 6;
 
-            Choice:
+                Choice:
                 try
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -119,6 +262,7 @@ namespace Assessment2
                 String email = "Empty";
 
                 int totalAmount = 0;                     //Total Amount for the expense
+                int UserCodeAuth = 0;
                 //DateOnly date;
                 switch (choice)
                 {
@@ -373,22 +517,6 @@ namespace Assessment2
                             }
                         }
 
-
-                        //foreach (KeyValuePair<int, Hashtable> i in Expense)    //For Dictionary
-                        //{
-                        //    foreach (DictionaryEntry e in i.Value)             //For HashTable
-                        //    {
-                        //        List<ExpenseAndPrice> expenseList = new List<ExpenseAndPrice>();
-
-                        //        foreach (ExpenseAndPrice k in expenseAndPriceList)
-                        //        {
-                        //            Console.WriteLine($"   \t{k.ExpenseName}\t\t\t\t{k.ExpenseAmount}");
-                        //        }
-                        //    }
-                        //}
-
-
-
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine("------------------------------------------------------------------");
                         Console.ResetColor();
@@ -455,9 +583,8 @@ namespace Assessment2
                         Console.WriteLine("------------------------------------------------------------------");
                         Console.ResetColor();
 
-                        string UserNameAuth = "Empty";
-                        string UserEmailAuth = "Empty";
-                        int UserCodeAuth = 0;
+                        
+                        
 
                         UserCode:
                         try
@@ -500,203 +627,428 @@ namespace Assessment2
                             goto UserCode;
                         }
 
-                        UserName:
-                        try
+                        if (verifyNameEmail(CodeEuserNamePass,UserCodeAuth))
                         {
-
+                        UserPassword:
                             Console.ForegroundColor = ConsoleColor.DarkGray;
-                            Console.Write("Enter the User Name: ");
+                            Console.Write("Enter the Password: ");
                             Console.ResetColor();
                             Console.ForegroundColor = ConsoleColor.DarkYellow;
-                            String userNameAuth = Console.ReadLine();
-                            Console.ResetColor();
-                            if (userNameAuth.Length == 0)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("Please Enter the Name");
-                                Console.ResetColor();
-                                goto UserName;
-                            }
-                            isValidString(userNameAuth);
-                            Hashtable userName = CodeEuserNamePass[UserCodeAuth];
-                            List<NameAndPass> NameList = (List<NameAndPass>)userName[UserCodeAuth];
-                            String storingName = NameList[0].UserName;
-                            if(storingName == userNameAuth)
-                            {
-                                UserNameAuth = userNameAuth;
-                            }
-                            else
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("The name is not valid for this code");
-                                Console.ResetColor();
-                                goto UserName;
-                            }
-
-                            UserEmail:
-                            Console.ForegroundColor = ConsoleColor.DarkGray;
-                            Console.Write("Enter the User Email: ");
-                            Console.ResetColor();
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            String userEmailAuth = Console.ReadLine();
+                            String userPassAuth = Console.ReadLine();
                             Console.ResetColor();
 
-                            if (UserEmailAuth.Length == 0)
+                            Hashtable passData = CodeEuserNamePass[UserCodeAuth];
+                            if (passData.ContainsKey(UserCodeAuth))
                             {
-                                Console.ForegroundColor = ConsoleColor.Yellow;
-                                Console.WriteLine("Please Enter the Email");
-                                Console.ResetColor();
-                                goto UserEmail;
-                            }
-                            else if (!isValidEmail(userEmailAuth))
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("Please Enter valid Email");
-                                Console.ResetColor();
-                                goto UserEmail;
-                            }
-                            else
-                            {
-                                Hashtable userEmail = CodeEuserNamePass[UserCodeAuth];
-                                List<NameAndPass> EmailList = (List<NameAndPass>)userEmail[UserCodeAuth];
-                                String StoredUser = EmailList[0].UserEmail;
-                                if (StoredUser == userEmailAuth)
+                                List<NameAndPass> PassList = (List<NameAndPass>)passData[UserCodeAuth];
+
+                                string storedPass = PassList[0].UserPassword;
+
+                                if (storedPass == userPassAuth)
                                 {
-                                    UserEmailAuth = userEmailAuth;
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.WriteLine();
+                                    Console.WriteLine("-------------------------Your Expense---------------------------");
+                                    Console.ResetColor();
+                                    Console.WriteLine();
+
+                                    displayExpensePrice(CodeEuserNamePass, UserCodeAuth,Expense);
+
+
+                                    //Console.ResetColor();
+                                    //Console.ForegroundColor = ConsoleColor.DarkGray;
+                                    //Console.Write("User Name : ");
+                                    //Console.ResetColor();
+                                    //Console.ForegroundColor = ConsoleColor.DarkRed;
+                                    //Hashtable userName = CodeEuserNamePass[UserCodeAuth];
+                                    //List<NameAndPass> nameList = (List<NameAndPass>)userName[UserCodeAuth];
+                                    //Console.WriteLine(nameList[0].UserName);
+                                    //Console.ResetColor();
+
+                                    //Console.ForegroundColor = ConsoleColor.DarkGray;
+                                    //Console.Write("User Code : ");
+                                    //Console.ResetColor();
+                                    //Console.ForegroundColor = ConsoleColor.DarkRed;
+                                    //Console.WriteLine(UserCodeAuth);
+                                    //Console.ResetColor();
+
+                                    //Console.ForegroundColor = ConsoleColor.DarkGray;
+                                    //Console.Write("Date : ");
+                                    //Console.ResetColor();
+                                    //Console.ForegroundColor = ConsoleColor.DarkRed;
+                                    //Hashtable dateData = CodeEuserNamePass[UserCodeAuth];
+                                    //List<NameAndPass> dateList = (List<NameAndPass>)dateData[UserCodeAuth];
+                                    //Console.WriteLine(dateList[0].Date);
+                                    //Console.ResetColor();
+
+                                    //Console.ForegroundColor = ConsoleColor.Cyan;
+                                    //Console.WriteLine("------------------------------------------------------------------");
+                                    //Console.WriteLine("|  \tExpense_Name\t\t\tAmount_Spent\t        |");
+                                    //Console.WriteLine("------------------------------------------------------------------");
+                                    //Console.ResetColor();
+
+                                    //Hashtable userExpanseTable = Expense[UserCodeAuth];
+                                    //foreach (DictionaryEntry i in userExpanseTable)
+                                    //{
+                                    //    List<ExpenseAndPrice> expenseList = i.Value as List<ExpenseAndPrice>;
+                                    //    foreach (ExpenseAndPrice k in expenseList)
+                                    //    {
+                                    //        Console.WriteLine($"   \t{k.ExpenseName}\t\t\t\t{k.ExpenseAmount}");
+                                    //    }
+                                    //}
+
+
+
+
+                                    //foreach (KeyValuePair<int, Hashtable> i in Expense)    //For Dictionary
+                                    //{
+                                    //    if(i.)
+                                    //    foreach (DictionaryEntry e in i.Value)             //For HashTable
+                                    //    {
+                                    //        List<ExpenseAndPrice> expenseList = new List<ExpenseAndPrice>();
+
+                                    //        foreach (ExpenseAndPrice k in expenseAndPriceList)
+                                    //        {
+                                    //            Console.WriteLine($"   \t{k.ExpenseName}\t\t\t\t{k.ExpenseAmount}");
+                                    //        }
+                                    //    }
+                                    //}
+
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                    Console.WriteLine("------------------------------------------------------------------");
+                                    Console.ResetColor();
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.Write($"                       Total Amount : ");
+                                    Console.ResetColor();
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine(Total[userCode]);
+                                    Console.ResetColor();
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                    Console.WriteLine("------------------------------------------------------------------");
+                                    Console.ResetColor();
+                                    Console.WriteLine();
+                                    Console.ForegroundColor = ConsoleColor.Blue;
+                                    Console.WriteLine("                     ~ * Thank You * ~                           ");
+                                    Console.ResetColor();
+                                    Console.WriteLine();
+                                    Console.WriteLine();
+
+                                    //Console.WriteLine("Press any Key to Continue....");
+                                    //Console.ReadKey();
                                 }
+
                                 else
                                 {
                                     Console.ForegroundColor = ConsoleColor.Red;
-                                    Console.WriteLine("User Email not Match for this Code");
-                                    goto UserEmail;
+                                    Console.WriteLine("Incorrect Password :(");
+                                    Console.ResetColor();
+                                    goto UserPassword;
                                 }
                             }
                         }
-                        catch (InvalidNameException e)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine(e.Message);
-                            Console.ResetColor();
-                            goto UserName;
-                        }
 
-                        UserPassword:
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
-                        Console.Write("Enter the Password: ");
-                        Console.ResetColor();
+                        UserCodeAuth = 0;
+
+                    //UserName:
+                    //    try
+                    //    {
+
+                    //        Console.ForegroundColor = ConsoleColor.DarkGray;
+                    //        Console.Write("Enter the User Name: ");
+                    //        Console.ResetColor();
+                    //        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    //        String userNameAuth = Console.ReadLine();
+                    //        Console.ResetColor();
+                    //        if (userNameAuth.Length == 0)
+                    //        {
+                    //            Console.ForegroundColor = ConsoleColor.Red;
+                    //            Console.WriteLine("Please Enter the Name");
+                    //            Console.ResetColor();
+                    //            goto UserName;
+                    //        }
+                    //        isValidString(userNameAuth);
+                    //        Hashtable userName = CodeEuserNamePass[UserCodeAuth];
+                    //        List<NameAndPass> NameList = (List<NameAndPass>)userName[UserCodeAuth];
+                    //        String storingName = NameList[0].UserName;
+                    //        if (storingName == userNameAuth)
+                    //        {
+                    //            UserNameAuth = userNameAuth;
+                    //        }
+                    //        else
+                    //        {
+                    //            Console.ForegroundColor = ConsoleColor.Red;
+                    //            Console.WriteLine("The name is not valid for this code");
+                    //            Console.ResetColor();
+                    //            goto UserName;
+                    //        }
+
+                    //    UserEmail:
+                    //        Console.ForegroundColor = ConsoleColor.DarkGray;
+                    //        Console.Write("Enter the User Email: ");
+                    //        Console.ResetColor();
+                    //        Console.ForegroundColor = ConsoleColor.Red;
+                    //        String userEmailAuth = Console.ReadLine();
+                    //        Console.ResetColor();
+
+                    //        if (UserEmailAuth.Length == 0)
+                    //        {
+                    //            Console.ForegroundColor = ConsoleColor.Yellow;
+                    //            Console.WriteLine("Please Enter the Email");
+                    //            Console.ResetColor();
+                    //            goto UserEmail;
+                    //        }
+                    //        else if (!isValidEmail(userEmailAuth))
+                    //        {
+                    //            Console.ForegroundColor = ConsoleColor.Red;
+                    //            Console.WriteLine("Please Enter valid Email");
+                    //            Console.ResetColor();
+                    //            goto UserEmail;
+                    //        }
+                    //        else
+                    //        {
+                    //            Hashtable userEmail = CodeEuserNamePass[UserCodeAuth];
+                    //            List<NameAndPass> EmailList = (List<NameAndPass>)userEmail[UserCodeAuth];
+                    //            String StoredUser = EmailList[0].UserEmail;
+                    //            if (StoredUser == userEmailAuth)
+                    //            {
+                    //                UserEmailAuth = userEmailAuth;
+                    //            }
+                    //            else
+                    //            {
+                    //                Console.ForegroundColor = ConsoleColor.Red;
+                    //                Console.WriteLine("User Email not Match for this Code");
+                    //                goto UserEmail;
+                    //            }
+                    //        }
+                    //    }
+                    //    catch (InvalidNameException e)
+                    //    {
+                    //        Console.ForegroundColor = ConsoleColor.Red;
+                    //        Console.WriteLine(e.Message);
+                    //        Console.ResetColor();
+                    //        goto UserName;
+                    //    }
+
+                        
+                        break;
+
+                    case 3:
+                        Console.WriteLine();
                         Console.ForegroundColor = ConsoleColor.DarkYellow;
-                        String userPassAuth = Console.ReadLine();
+                        Console.WriteLine("             Enter '3' to View all the Expese Summary             ");
                         Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine();
+                        Console.WriteLine("-------------------------Expense Summary--------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine();
 
-                        Hashtable passData = CodeEuserNamePass[UserCodeAuth];
-                        if (passData.ContainsKey(UserCodeAuth))
+                        userCode:
+                        try
                         {
-                            List<NameAndPass> PassList = (List<NameAndPass>)passData[UserCodeAuth];
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.Write("Enter the User Code: ");
+                            Console.ResetColor();
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            int userCodeAuth = int.Parse(Console.ReadLine());
+                            Console.ResetColor();
 
-                            string storedPass = PassList[0].UserPassword;
-
-                            if (storedPass == userPassAuth)
+                            if (CodeEuserNamePass.ContainsKey(userCodeAuth))
                             {
-                                Console.ForegroundColor = ConsoleColor.Cyan;
-
-                                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                                Console.WriteLine();
-                                Console.WriteLine("----------------------Your Expense Summary------------------------");
-                                Console.ResetColor();
-                                Console.WriteLine();
-
-                                Console.ResetColor();
-                                Console.ForegroundColor = ConsoleColor.DarkGray;
-                                Console.Write("User Name : ");
-                                Console.ResetColor();
-                                Console.ForegroundColor = ConsoleColor.DarkRed;
-                                Hashtable userName = CodeEuserNamePass[UserCodeAuth];
-                                List<NameAndPass> nameList = (List<NameAndPass>)userName[UserCodeAuth];
-                                Console.WriteLine(nameList[0].UserName);
-                                Console.ResetColor();
-
-                                Console.ForegroundColor = ConsoleColor.DarkGray;
-                                Console.Write("User Code : ");
-                                Console.ResetColor();
-                                Console.ForegroundColor = ConsoleColor.DarkRed;
-                                Console.WriteLine(UserCodeAuth);
-                                Console.ResetColor();
-
-                                Console.ForegroundColor = ConsoleColor.DarkGray;
-                                Console.Write("Date : ");
-                                Console.ResetColor();
-                                Console.ForegroundColor = ConsoleColor.DarkRed;
-                                Hashtable dateData = CodeEuserNamePass[UserCodeAuth];
-                                List<NameAndPass> dateList = (List<NameAndPass>)dateData[UserCodeAuth]; 
-                                Console.WriteLine(dateList[0].Date);
-                                Console.ResetColor();
-
-                                Console.ForegroundColor = ConsoleColor.Cyan;
-                                Console.WriteLine("------------------------------------------------------------------");
-                                Console.WriteLine("|  \tExpense_Name\t\t\tAmount_Spent\t        |");
-                                Console.WriteLine("------------------------------------------------------------------");
-                                Console.ResetColor();
-
-                                Hashtable userExpanseTable = Expense[UserCodeAuth];
-                                foreach (DictionaryEntry i in userExpanseTable)
-                                {
-                                    List<ExpenseAndPrice> expenseList = i.Value as List<ExpenseAndPrice>;
-                                    foreach (ExpenseAndPrice k in expenseList)
-                                    {
-                                        Console.WriteLine($"   \t{k.ExpenseName}\t\t\t\t{k.ExpenseAmount}");
-                                    }
-                                }
-
-                                //foreach (KeyValuePair<int, Hashtable> i in Expense)    //For Dictionary
-                                //{
-                                //    if(i.)
-                                //    foreach (DictionaryEntry e in i.Value)             //For HashTable
-                                //    {
-                                //        List<ExpenseAndPrice> expenseList = new List<ExpenseAndPrice>();
-
-                                //        foreach (ExpenseAndPrice k in expenseAndPriceList)
-                                //        {
-                                //            Console.WriteLine($"   \t{k.ExpenseName}\t\t\t\t{k.ExpenseAmount}");
-                                //        }
-                                //    }
-                                //}
-
-                                Console.ForegroundColor = ConsoleColor.Cyan;
-                                Console.WriteLine("------------------------------------------------------------------");
-                                Console.ResetColor();
-                                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                                Console.Write($"                       Total Amount : ");
-                                Console.ResetColor();
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine(Total[userCode]);
-                                Console.ResetColor();
-                                Console.ForegroundColor = ConsoleColor.Cyan;
-                                Console.WriteLine("------------------------------------------------------------------");
-                                Console.ResetColor();
-                                Console.WriteLine();
-                                Console.ForegroundColor = ConsoleColor.Blue;
-                                Console.WriteLine("                     ~ * Thank You * ~                           ");
-                                Console.ResetColor();
-                                Console.WriteLine();
-                                Console.WriteLine();
-
-                                //Console.WriteLine("Press any Key to Continue....");
-                                //Console.ReadKey();
+                                UserCodeAuth = userCodeAuth;
                             }
-
                             else
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("Incorrect Password :(");
+                                Console.WriteLine("Invail Code! Code Not Found");
                                 Console.ResetColor();
-                                goto UserPassword;
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.WriteLine("If you want to add the Expense? (Y) / If you want to Re-Enter the Code? (S)");
+                                char ch = char.Parse(Console.ReadLine());
+                                if (ch == 'y' || ch == 'Y')
+                                {
+                                    goto Name;
+                                }
+                                if (ch == 'S' || ch == 's')
+                                {
+                                    goto userCode;
+                                }
+                            }
+
+                        }
+                        catch (FormatException e)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Invalid code! Please enter a valid Code in Number digits only. \nAlphabets or symbols or Whitespace are not allowed.");
+                            Console.ResetColor();
+                            goto userCode;
+                        }
+
+                        if (verifyNameEmail(CodeEuserNamePass, UserCodeAuth))
+                        {
+                        UserPassword:
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.Write("Enter the Password: ");
+                            Console.ResetColor();
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            String userPassAuth = Console.ReadLine();
+                            Console.ResetColor();
+
+                            Hashtable passData = CodeEuserNamePass[UserCodeAuth];
+                            if (passData.ContainsKey(UserCodeAuth))
+                            {
+                                List<NameAndPass> PassList = (List<NameAndPass>)passData[UserCodeAuth];
+
+                                string storedPass = PassList[0].UserPassword;
+
+                                if (storedPass == userPassAuth)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.WriteLine();
+                                    Console.WriteLine("-------------------------Your Expense---------------------------");
+                                    Console.ResetColor();
+                                    Console.WriteLine();
+
+                                    displayExpensePrice(CodeEuserNamePass, UserCodeAuth, Expense);
+
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                    Console.WriteLine("------------------------------------------------------------------");
+                                    Console.ResetColor();
+
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.Write($"Total Amount         : ");
+                                    Console.ResetColor();
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine(Total[UserCodeAuth]);
+                                    Console.ResetColor();
+
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.Write($"Average Expense      : ");
+                                    Console.ResetColor();
+                                    Hashtable ExpensePrice = Expense[UserCodeAuth];
+                                    List<ExpenseAndPrice> expenseList = (List<ExpenseAndPrice>)ExpensePrice[UserCodeAuth];
+                                    int lengthOfExpense = expenseList.Count;
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    int total =(int) Total[UserCodeAuth];
+                                    Console.WriteLine(total/lengthOfExpense);
+                                    Console.ResetColor();
+
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.Write($"Highest Expense      : ");
+                                    Console.ResetColor();
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.Write(expenseList.Max(e => e.ExpenseAmount));
+                                    Console.ResetColor();
+                                    Console.ForegroundColor = ConsoleColor.Magenta;
+                                    Console.Write($"\t===>\t");
+                                    Console.ResetColor();
+                                    string expenseName1 = "Empty";
+                                    for (int i = 0; i < expenseList.Count; i++)
+                                    {
+                                        if (expenseList[i].ExpenseAmount == expenseList.Max(e =>e.ExpenseAmount))
+                                        {
+                                            expenseName1 = expenseList[i].ExpenseName;
+                                            break;
+                                        }
+                                    }
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.Write($"Highest Expense Name  : ");
+                                    Console.ResetColor();
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine(expenseName1);
+                                    Console.ResetColor();
+
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.Write($"Lowest Expense       : ");
+                                    Console.ResetColor();
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.Write(expenseList.Min(e => e.ExpenseAmount));
+                                    Console.ResetColor();
+                                    Console.ForegroundColor = ConsoleColor.Magenta;
+                                    Console.Write($"\t===>\t");
+                                    Console.ResetColor();
+                                    string expenseName2 = "Empty";
+                                    for (int i = 0; i < expenseList.Count; i++)
+                                    {
+                                        if (expenseList[i].ExpenseAmount == expenseList.Min(e => e.ExpenseAmount))
+                                        {
+                                            expenseName2 = expenseList[i].ExpenseName;
+                                            break;
+                                        }
+                                    }
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    
+                                    Console.ResetColor();
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine(expenseName2);
+                                    Console.ResetColor();
+                                    Console.Write($"Lowest Expense Name   : ");
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                    Console.WriteLine("------------------------------------------------------------------");
+                                    Console.ResetColor();
+                                    Console.WriteLine();
+                                }
+
+                                else
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("Incorrect Password :(");
+                                    Console.ResetColor();
+                                    goto UserPassword;
+                                }
+
                             }
                         }
+                    break;
+
+                    case 4:
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine();
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("                     You Choose to Exist :)                  ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine();
+                        Console.WriteLine();
+
+                        for (int i = 5; i > 0; i--)
+                        {
+                            Console.Clear();
+                            Console.ForegroundColor = ConsoleColor.Cyan;
+                            Console.Write("                 Existing From Grocery: ");
+                            Console.ResetColor();
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($" {i} ");
+                            Console.ResetColor();
+                            Thread.Sleep(1000);
+                        }
+
+
+
                         break;
+                }
 
+                if(choice == 4)
+                {
 
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.WriteLine("                      ~ * Thank You * ~                    ");
+                    Console.ResetColor();
+                    break;
                 }
             }
+            Console.ReadKey();
+        
         }
 
     }
