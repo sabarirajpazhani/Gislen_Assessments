@@ -180,7 +180,7 @@ namespace Assessment2
                 List<ExpenseAndPrice> expenseList = i.Value as List<ExpenseAndPrice>;
                 foreach (ExpenseAndPrice k in expenseList)
                 {
-                    Console.WriteLine($" {sn}   \t{k.ExpenseName}\t\t\t\t{k.ExpenseAmount}");
+                    Console.WriteLine($"  {sn}   \t\t{k.ExpenseName} \t\t\t\t{k.ExpenseAmount}");
                     sn++;
                 }
                 
@@ -341,7 +341,42 @@ namespace Assessment2
                         }
 
 
-                        Password:
+                    Email:
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.Write("Enter the Email : ");                      //User Email
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        String UserEmail = Console.ReadLine();
+                        Console.ResetColor();
+
+                        if (VerifyEmailOnly(CodeEuserNamePass, UserEmail))
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Already Email Exist");
+                            Console.ResetColor();
+                            goto Email;
+                        }
+                        if (UserEmail.Length == 0)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine("Please Enter the Email");
+                            Console.ResetColor();
+                            goto Email;
+                        }
+                        else if (!isValidEmail(UserEmail))
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine("Please Enter valid Email");
+                            Console.ResetColor();
+                            goto Email;
+                        }
+                        else
+                        {
+                            email = UserEmail;
+                        }
+
+
+                    Password:
                         Console.ForegroundColor = ConsoleColor.DarkGray;
                         Console.Write("Enter the Password : ");                      //User Password
                         Console.ResetColor();
@@ -365,40 +400,6 @@ namespace Assessment2
                             Console.WriteLine("Please enter a password of at least 5 characters.");
                             Console.ResetColor();
                             goto Password;
-                        }
-
-                        Email:
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
-                        Console.Write("Enter the Email : ");                      //User Email
-                        Console.ResetColor();
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        String UserEmail = Console.ReadLine();
-                        Console.ResetColor();
-
-                        if(VerifyEmailOnly(CodeEuserNamePass, UserEmail))
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Already Email Exist");
-                            Console.ResetColor();
-                            goto Email;
-                        }
-                        if(UserEmail.Length == 0)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine("Please Enter the Email");
-                            Console.ResetColor();
-                            goto Email;
-                        }
-                        else if (!isValidEmail(UserEmail))
-                        {
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine("Please Enter valid Email");
-                            Console.ResetColor();
-                            goto Email;
-                        }
-                        else
-                        {
-                            email = UserEmail;
                         }
 
                         userCode += 1;
@@ -475,10 +476,30 @@ namespace Assessment2
                         {
                             ExpenseAndPrice NamePrice = new ExpenseAndPrice();
 
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write($"Enter the name for Expense {i + 1} : ");
-                            Console.ResetColor();
-                            NamePrice.ExpenseName = Console.ReadLine();
+                            Expense:
+                            try
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.Write($"Enter the name for Expense {i + 1} : ");
+                                Console.ResetColor();
+                                string Expensename = Console.ReadLine();
+                                if(Expensename.Length == 0)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("Enter the Expense Name");
+                                    Console.ResetColor();
+                                }
+                                isValidString(Expensename);
+
+                                NamePrice.ExpenseName = Expensename;
+                            }
+                            catch (InvalidNameException e)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine(e.Message);
+                                Console.ResetColor();
+                                goto Expense;
+                            }
 
                             Console.ForegroundColor = ConsoleColor.DarkYellow;
                             Console.Write($"Enter the Amount for {NamePrice.ExpenseName} : ");
@@ -498,10 +519,10 @@ namespace Assessment2
 
                         Expense.Add(userCode, EnameAndAmount);                   //adding hashtables (code, price and ammount) in dictionary
 
-                        
 
 
 
+                        Console.WriteLine();
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("                   Successfully Recorded :)                        ");
                         Console.ResetColor();
@@ -592,24 +613,11 @@ namespace Assessment2
                         //    }
                         //}
 
+                        Console.Write("Press 'Enter' Key to Continue....");
+                        Console.WriteLine();
+                        Console.WriteLine();
+                        Console.ReadKey();
 
-
-
-                        //foreach (KeyValuePair<int, Hashtable> i in CodeEuserNamePass)                                //UserName and Password
-                        //{
-                        //    Console.WriteLine("Code :" + i.Key);
-
-                        //    foreach (DictionaryEntry e in i.Value)
-                        //    {
-                        //        List<NameAndPass> expenses = (List<NameAndPass>)e.Value;
-
-                        //        foreach (NameAndPass k in expenses)
-                        //        {
-                        //            Console.WriteLine(k.UserName + " - " + k.UserPassword);
-                        //        }
-
-                        //    }
-                        //}
                         break;
 
                     case 2:
@@ -621,9 +629,6 @@ namespace Assessment2
                         Console.WriteLine();
                         Console.WriteLine("------------------------------------------------------------------");
                         Console.ResetColor();
-
-                        
-                        
 
                         UserCode:
                         try
@@ -695,66 +700,6 @@ namespace Assessment2
 
                                     displayExpensePrice(CodeEuserNamePass, UserCodeAuth,Expense);
 
-
-                                    //Console.ResetColor();
-                                    //Console.ForegroundColor = ConsoleColor.DarkGray;
-                                    //Console.Write("User Name : ");
-                                    //Console.ResetColor();
-                                    //Console.ForegroundColor = ConsoleColor.DarkRed;
-                                    //Hashtable userName = CodeEuserNamePass[UserCodeAuth];
-                                    //List<NameAndPass> nameList = (List<NameAndPass>)userName[UserCodeAuth];
-                                    //Console.WriteLine(nameList[0].UserName);
-                                    //Console.ResetColor();
-
-                                    //Console.ForegroundColor = ConsoleColor.DarkGray;
-                                    //Console.Write("User Code : ");
-                                    //Console.ResetColor();
-                                    //Console.ForegroundColor = ConsoleColor.DarkRed;
-                                    //Console.WriteLine(UserCodeAuth);
-                                    //Console.ResetColor();
-
-                                    //Console.ForegroundColor = ConsoleColor.DarkGray;
-                                    //Console.Write("Date : ");
-                                    //Console.ResetColor();
-                                    //Console.ForegroundColor = ConsoleColor.DarkRed;
-                                    //Hashtable dateData = CodeEuserNamePass[UserCodeAuth];
-                                    //List<NameAndPass> dateList = (List<NameAndPass>)dateData[UserCodeAuth];
-                                    //Console.WriteLine(dateList[0].Date);
-                                    //Console.ResetColor();
-
-                                    //Console.ForegroundColor = ConsoleColor.Cyan;
-                                    //Console.WriteLine("------------------------------------------------------------------");
-                                    //Console.WriteLine("|  \tExpense_Name\t\t\tAmount_Spent\t        |");
-                                    //Console.WriteLine("------------------------------------------------------------------");
-                                    //Console.ResetColor();
-
-                                    //Hashtable userExpanseTable = Expense[UserCodeAuth];
-                                    //foreach (DictionaryEntry i in userExpanseTable)
-                                    //{
-                                    //    List<ExpenseAndPrice> expenseList = i.Value as List<ExpenseAndPrice>;
-                                    //    foreach (ExpenseAndPrice k in expenseList)
-                                    //    {
-                                    //        Console.WriteLine($"   \t{k.ExpenseName}\t\t\t\t{k.ExpenseAmount}");
-                                    //    }
-                                    //}
-
-
-
-
-                                    //foreach (KeyValuePair<int, Hashtable> i in Expense)    //For Dictionary
-                                    //{
-                                    //    if(i.)
-                                    //    foreach (DictionaryEntry e in i.Value)             //For HashTable
-                                    //    {
-                                    //        List<ExpenseAndPrice> expenseList = new List<ExpenseAndPrice>();
-
-                                    //        foreach (ExpenseAndPrice k in expenseAndPriceList)
-                                    //        {
-                                    //            Console.WriteLine($"   \t{k.ExpenseName}\t\t\t\t{k.ExpenseAmount}");
-                                    //        }
-                                    //    }
-                                    //}
-
                                     Console.ForegroundColor = ConsoleColor.Cyan;
                                     Console.WriteLine("------------------------------------------------------------------");
                                     Console.ResetColor();
@@ -790,87 +735,11 @@ namespace Assessment2
 
                         UserCodeAuth = 0;
 
-                    //UserName:
-                    //    try
-                    //    {
+                        Console.Write("Press 'Enter' Key to Continue....");
+                        Console.WriteLine();
+                        Console.WriteLine();
+                        Console.ReadKey();
 
-                    //        Console.ForegroundColor = ConsoleColor.DarkGray;
-                    //        Console.Write("Enter the User Name: ");
-                    //        Console.ResetColor();
-                    //        Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    //        String userNameAuth = Console.ReadLine();
-                    //        Console.ResetColor();
-                    //        if (userNameAuth.Length == 0)
-                    //        {
-                    //            Console.ForegroundColor = ConsoleColor.Red;
-                    //            Console.WriteLine("Please Enter the Name");
-                    //            Console.ResetColor();
-                    //            goto UserName;
-                    //        }
-                    //        isValidString(userNameAuth);
-                    //        Hashtable userName = CodeEuserNamePass[UserCodeAuth];
-                    //        List<NameAndPass> NameList = (List<NameAndPass>)userName[UserCodeAuth];
-                    //        String storingName = NameList[0].UserName;
-                    //        if (storingName == userNameAuth)
-                    //        {
-                    //            UserNameAuth = userNameAuth;
-                    //        }
-                    //        else
-                    //        {
-                    //            Console.ForegroundColor = ConsoleColor.Red;
-                    //            Console.WriteLine("The name is not valid for this code");
-                    //            Console.ResetColor();
-                    //            goto UserName;
-                    //        }
-
-                    //    UserEmail:
-                    //        Console.ForegroundColor = ConsoleColor.DarkGray;
-                    //        Console.Write("Enter the User Email: ");
-                    //        Console.ResetColor();
-                    //        Console.ForegroundColor = ConsoleColor.Red;
-                    //        String userEmailAuth = Console.ReadLine();
-                    //        Console.ResetColor();
-
-                    //        if (UserEmailAuth.Length == 0)
-                    //        {
-                    //            Console.ForegroundColor = ConsoleColor.Yellow;
-                    //            Console.WriteLine("Please Enter the Email");
-                    //            Console.ResetColor();
-                    //            goto UserEmail;
-                    //        }
-                    //        else if (!isValidEmail(userEmailAuth))
-                    //        {
-                    //            Console.ForegroundColor = ConsoleColor.Red;
-                    //            Console.WriteLine("Please Enter valid Email");
-                    //            Console.ResetColor();
-                    //            goto UserEmail;
-                    //        }
-                    //        else
-                    //        {
-                    //            Hashtable userEmail = CodeEuserNamePass[UserCodeAuth];
-                    //            List<NameAndPass> EmailList = (List<NameAndPass>)userEmail[UserCodeAuth];
-                    //            String StoredUser = EmailList[0].UserEmail;
-                    //            if (StoredUser == userEmailAuth)
-                    //            {
-                    //                UserEmailAuth = userEmailAuth;
-                    //            }
-                    //            else
-                    //            {
-                    //                Console.ForegroundColor = ConsoleColor.Red;
-                    //                Console.WriteLine("User Email not Match for this Code");
-                    //                goto UserEmail;
-                    //            }
-                    //        }
-                    //    }
-                    //    catch (InvalidNameException e)
-                    //    {
-                    //        Console.ForegroundColor = ConsoleColor.Red;
-                    //        Console.WriteLine(e.Message);
-                    //        Console.ResetColor();
-                    //        goto UserName;
-                    //    }
-
-                        
                         break;
 
                     case 3:
@@ -1020,15 +889,19 @@ namespace Assessment2
                                         }
                                     }
                                     Console.ForegroundColor = ConsoleColor.DarkYellow;
-                                    
+                                    Console.Write($"Lowest Expense Name   : ");
                                     Console.ResetColor();
                                     Console.ForegroundColor = ConsoleColor.Red;
                                     Console.WriteLine(expenseName2);
                                     Console.ResetColor();
-                                    Console.Write($"Lowest Expense Name   : ");
+                                    
                                     Console.ForegroundColor = ConsoleColor.Cyan;
                                     Console.WriteLine("------------------------------------------------------------------");
                                     Console.ResetColor();
+                                    Console.ForegroundColor = ConsoleColor.Blue;
+                                    Console.WriteLine("                     ~ * Thank You * ~                           ");
+                                    Console.ResetColor();
+                                    Console.WriteLine();
                                     Console.WriteLine();
                                 }
 
@@ -1043,21 +916,24 @@ namespace Assessment2
                             }
                         }
                         UserCodeAuth = 0;
+
+                        Console.Write("Press 'Enter' Key to Continue....");
+                        Console.WriteLine();
+                        Console.WriteLine();
+                        Console.ReadKey();
+
                         break;
 
                     case 4:
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.WriteLine("-------------------------------------------------------------");
-                        Console.ResetColor();
-                        Console.WriteLine();
+                      
                         Console.WriteLine();
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("              You Choose to Update The Expense :)            ");
                         Console.ResetColor();
+                        Console.WriteLine();
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine("-------------------------------------------------------------");
                         Console.ResetColor();
-                        Console.WriteLine();
                         Console.WriteLine();
 
                         Code:
@@ -1131,11 +1007,22 @@ namespace Assessment2
                                     Console.ForegroundColor = ConsoleColor.Cyan;
                                     Console.WriteLine("------------------------------------------------------------------");
                                     Console.ResetColor();
+
                                     Update:
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    Console.Write("Enter the S.No to Edit the Expense Record");
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.Write("Enter the S.No to Edit the Expense Record : ");
                                     Console.ResetColor();
                                     int sno = int.Parse(Console.ReadLine());
+                                    Hashtable snoLength = Expense[UserCodeAuth];
+                                    List < ExpenseAndPrice > sonLengthList = (List<ExpenseAndPrice>)snoLength[UserCodeAuth];
+                                    if(sonLengthList.Count == 0 || sonLengthList.Count < sno)
+                                    {
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine("Enter the S.No Properly");
+                                        Console.ResetColor();
+                                        goto Update;
+                                    }
+
 
                                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                                     Console.WriteLine("Press 'e' button to update the Expanse Name (e)");
@@ -1143,30 +1030,99 @@ namespace Assessment2
                                     Console.ResetColor();
                                     char ch = char.Parse(Console.ReadLine());
 
+                                    Hashtable updateExpanse = Expense[UserCodeAuth];
                                     int snoCheck = 1;
-                                    if(ch == 'e')
+                                    if (ch == 'e' || ch=='E')
                                     {
-                                        
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.Write("Enter the Expense Name for Updating : ");
+                                        Console.ResetColor();
                                         string updatedExpense = Console.ReadLine();
 
-                                        Hashtable updateExpanseName = Expense[UserCodeAuth];
-                                        foreach (DictionaryEntry i in updateExpanseName)
+                                        foreach (DictionaryEntry i in updateExpanse)
                                         {
                                             List<ExpenseAndPrice> expenseList = i.Value as List<ExpenseAndPrice>;
-                                            for(int j = 0; j<expenseList.Count; j++)
+                                            for (int j = 0; j < expenseList.Count; j++)
                                             {
-                                                if(snoCheck == sno)
+                                                if (snoCheck == sno)
                                                 {
                                                     expenseList[j].ExpenseName = updatedExpense;
-                                                    Console.ForegroundColor = ConsoleColor.Green;
-                                                    Console.WriteLine("Expense Name is Successfully Updated");
+                                                    Console.WriteLine();
+                                                    Console.ForegroundColor = ConsoleColor.Magenta;
+                                                    Console.WriteLine("Expense Name is Successfully Updated :)");
                                                     Console.ResetColor();
+                                                    Console.WriteLine();
                                                     break;
                                                 }
                                                 snoCheck++;
                                             }
                                         }
                                     }
+                                    int sum = 0;
+                                    if (ch == 'v' || ch == 'V')
+                                    {
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.Write("Enter the Expense Amount for Updating : ");
+                                        Console.ResetColor();
+                                        int updatedExpenseAmt = int.Parse(Console.ReadLine());
+
+                                        foreach (DictionaryEntry i in updateExpanse)
+                                        {
+                                            List<ExpenseAndPrice> expenseList = i.Value as List<ExpenseAndPrice>;
+                                            for (int j = 0; j < expenseList.Count; j++)
+                                            {
+                                                if (snoCheck == sno)
+                                                {
+                                                    expenseList[j].ExpenseAmount = updatedExpenseAmt;
+                                                    Console.ForegroundColor = ConsoleColor.Magenta;
+                                                    Console.WriteLine("Expense Amount is Successfully Updated :)");
+                                                    Console.ResetColor();
+                                                    break;
+                                                }
+                                                snoCheck++;
+                                            }
+                                        }
+
+                                        foreach(DictionaryEntry i in updateExpanse)
+                                        {
+                                            List<ExpenseAndPrice> expenseList = i.Value as List<ExpenseAndPrice>;
+                                            int sumOfAllAmount = expenseList.Sum(x => x.ExpenseAmount);
+                                            sum = sumOfAllAmount;
+                                        }
+
+                                        Total[UserCodeAuth] = sum;
+                                        
+                                    }
+
+
+                                    snoCheck = 0;
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.Write("If you Want to See the updated Expenses (Y/N): ");
+                                    Console.ResetColor();
+                                    char ch2 = char.Parse(Console.ReadLine());
+                                    if (ch2 == 'Y' || ch2 == 'y')
+                                    {
+                                        Console.WriteLine();
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.WriteLine("Here your Updated Summary");
+                                        Console.ResetColor();
+                                        Console.WriteLine() ;
+                                        displayExpensePrice(CodeEuserNamePass, UserCodeAuth, Expense);
+                                        Console.ForegroundColor = ConsoleColor.Cyan;
+                                        Console.WriteLine("--------------------------------------------------------------");
+                                        Console.ResetColor();
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.Write("Total Amount : ");
+                                        Console.ResetColor();
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine(Total[UserCodeAuth]);
+                                        Console.ResetColor();
+                                        Console.ForegroundColor = ConsoleColor.Cyan;
+                                        Console.WriteLine("--------------------------------------------------------------");
+                                        Console.ResetColor();
+
+                                    }
+                                    
                                     Console.ForegroundColor = ConsoleColor.Red;
                                     Console.Write("If you Want to Do update (Y/N): ");
                                     Console.ResetColor();
@@ -1224,8 +1180,6 @@ namespace Assessment2
                             Thread.Sleep(1000);
                         }
 
-
-
                         break;
                 }
 
@@ -1244,4 +1198,4 @@ namespace Assessment2
         }
 
     }
-}
+} 
