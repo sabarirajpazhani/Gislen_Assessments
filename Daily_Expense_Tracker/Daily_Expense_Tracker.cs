@@ -249,7 +249,8 @@ namespace Assessment2
                 Console.WriteLine("                         - Highest and Lowest Expense             ");
                 Console.WriteLine("                         - Average Expense                        ");
                 Console.WriteLine("                    4. Update the Expense (Both Expense and Amount");
-                Console.WriteLine("                    5. Exist                                      ");
+                Console.WriteLine("                    5. Remove the Expense                         ");
+                Console.WriteLine("                    6. Exist                                      ");
 
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("------------------------------------------------------------------");
@@ -1093,9 +1094,7 @@ namespace Assessment2
                                         Total[UserCodeAuth] = sum;
                                         
                                     }
-
-
-                                    snoCheck = 0;
+                                    snoCheck = 1;
                                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                                     Console.Write("If you Want to See the updated Expenses (Y/N): ");
                                     Console.ResetColor();
@@ -1151,9 +1150,190 @@ namespace Assessment2
 
                         break;
 
-
-
                     case 5:
+
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("              You Choose to Remove The Expense :)            ");
+                        Console.ResetColor();
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.ResetColor();
+                        Console.WriteLine();
+
+                        Code1:
+                        try
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.Write("Enter the User Code: ");
+                            Console.ResetColor();
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            int userCodeAuth = int.Parse(Console.ReadLine());
+                            Console.ResetColor();
+
+                            if (CodeEuserNamePass.ContainsKey(userCodeAuth))
+                            {
+                                UserCodeAuth = userCodeAuth;
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Invail Code! Code Not Found");
+                                Console.ResetColor();
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.WriteLine("If you want to add the Expense? (Y) / If you want to Re-Enter the Code? (S)");
+                                char ch = char.Parse(Console.ReadLine());
+                                if (ch == 'y' || ch == 'Y')
+                                {
+                                    goto Name;
+                                }
+                                if (ch == 'S' || ch == 's')
+                                {
+                                    goto Code1;
+                                }
+                            }
+
+                        }
+                        catch (FormatException e)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Invalid code! Please enter a valid Code in Number digits only. \nAlphabets or symbols or Whitespace are not allowed.");
+                            Console.ResetColor();
+                            goto Code1;
+                        }
+
+                        UserPassword1:
+                        if (verifyNameEmail(CodeEuserNamePass, UserCodeAuth))
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.Write("Enter the Password: ");
+                            Console.ResetColor();
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            String userPassAuth = Console.ReadLine();
+                            Console.ResetColor();
+
+                            Hashtable passData = CodeEuserNamePass[UserCodeAuth];
+                            int removeSum = 0;
+                            if (passData.ContainsKey(UserCodeAuth))
+                            {
+                                List<NameAndPass> PassList = (List<NameAndPass>)passData[UserCodeAuth];
+
+                                string storedPass = PassList[0].UserPassword;
+
+                                if (storedPass == userPassAuth)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                    Console.WriteLine();
+                                    Console.WriteLine("---------------------------Your Expense---------------------------");
+                                    Console.ResetColor();
+                                    Console.WriteLine();
+
+                                    displayExpensePrice(CodeEuserNamePass, UserCodeAuth, Expense);
+
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                    Console.WriteLine("------------------------------------------------------------------");
+                                    Console.ResetColor();
+
+                                    Update1:
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.Write("Enter the S.No to Edit the Expense Record : ");
+                                    Console.ResetColor();
+                                    int sno = int.Parse(Console.ReadLine());
+                                    Hashtable snoLength = Expense[UserCodeAuth];
+                                    List<ExpenseAndPrice> sonLengthList = (List<ExpenseAndPrice>)snoLength[UserCodeAuth];
+                                    if (sonLengthList.Count == 0 || sonLengthList.Count < sno)
+                                    {
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine("Enter the S.No Properly");
+                                        Console.ResetColor();
+                                        goto Update1;
+                                    }
+                                    int snoCheck = 1;
+                                    Hashtable removeExpanse = Expense[UserCodeAuth];
+                                    foreach (DictionaryEntry i in removeExpanse)
+                                    {
+                                        List<ExpenseAndPrice> expenseList = i.Value as List<ExpenseAndPrice>;
+                                        for (int j = 0; j < expenseList.Count; j++)
+                                        {
+                                            if (snoCheck == sno)
+                                            {
+                                                expenseList.RemoveAt(j);
+                                                Console.ForegroundColor = ConsoleColor.Magenta;
+                                                Console.WriteLine("Expense is Successfully Removed :)");
+                                                Console.ResetColor();
+                                                break;
+                                            }
+                                            snoCheck++;
+                                        }
+
+                                    }
+
+                                    foreach (DictionaryEntry i in removeExpanse)
+                                    {
+                                        List<ExpenseAndPrice> expenseList = i.Value as List<ExpenseAndPrice>;
+                                        int sumOfAllAmount = expenseList.Sum(x => x.ExpenseAmount);
+                                        removeSum = sumOfAllAmount;
+                                    }
+
+                                    Total[UserCodeAuth] = removeSum;
+
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.Write("If you Want to See the Updated Expenses (Y/N): ");
+                                    Console.ResetColor();
+                                    char ch2 = char.Parse(Console.ReadLine());
+                                    if (ch2 == 'Y' || ch2 == 'y')
+                                    {
+                                        Console.WriteLine();
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.WriteLine("Here your Updated Summary");
+                                        Console.ResetColor();
+                                        Console.WriteLine();
+                                        displayExpensePrice(CodeEuserNamePass, UserCodeAuth, Expense);
+                                        Console.ForegroundColor = ConsoleColor.Cyan;
+                                        Console.WriteLine("--------------------------------------------------------------");
+                                        Console.ResetColor();
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.Write("Total Amount : ");
+                                        Console.ResetColor();
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine(Total[UserCodeAuth]);
+                                        Console.ResetColor();
+                                        Console.ForegroundColor = ConsoleColor.Cyan;
+                                        Console.WriteLine("--------------------------------------------------------------");
+                                        Console.ResetColor();
+
+                                    }
+
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.Write("If you Want to Do Removing (Y/N): ");
+                                    Console.ResetColor();
+                                    char check = char.Parse(Console.ReadLine());
+                                    if (check == 'Y' || check == 'y')
+                                    {
+                                        goto Update1;
+                                    }
+
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                    Console.WriteLine("------------------------------------------------------------------");
+                                    Console.ResetColor();
+                                    Console.WriteLine();
+
+                                    snoCheck = 1;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Incorrect Password :(");
+                            Console.ResetColor();
+                            goto UserPassword1;
+                        }
+
+                        break;
+
+
+                    case 6:
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine("-------------------------------------------------------------");
                         Console.ResetColor();
@@ -1168,7 +1348,7 @@ namespace Assessment2
                         Console.WriteLine();
                         Console.WriteLine();
 
-                        for (int i = 5; i > 0; i--)
+                        for (int i = 6; i > 0; i--)
                         {
                             Console.Clear();
                             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -1183,7 +1363,7 @@ namespace Assessment2
                         break;
                 }
 
-                if(choice == 5)
+                if(choice == 6)
                 {
 
                     Console.Clear();
